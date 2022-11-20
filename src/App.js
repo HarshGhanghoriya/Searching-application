@@ -1,33 +1,32 @@
 import "./App.css";
 import { useEffect, useState } from "react";
 import { Grid } from "@mui/material";
+import "./index.css";
 
 function App() {
   const [movie, setMovie] = useState();
   const [error, setError] = useState();
+  const option = {
+    method: "GET",
+    headers: {
+      "X-RapidAPI-Key": "9054a624d1msh17b5c437cd34f70p1a6bdbjsnb1dcc6c4eed5",
+      "X-RapidAPI-Host": "bloomberg-market-and-financial-news.p.rapidapi.com",
+    },
+  };
   const handleCall = async (search) => {
-    let Top250Movies = await fetch(
-      `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/search?query=${search}`,
-      {
-        method: "GET",
-        headers: {
-          "X-RapidAPI-Key":
-            "9054a624d1msh17b5c437cd34f70p1a6bdbjsnb1dcc6c4eed5",
-          "X-RapidAPI-Host":
-            "spoonacular-recipe-food-nutrition-v1.p.rapidapi.com",
-        },
-      }
-    )
-      .then((response) => response.json())
+    if (search !== "") {
+      let Top250Movies = await fetch(
+        `https://bloomberg-market-and-financial-news.p.rapidapi.com/market/auto-complete?query=${search}`,
+        option
+      )
+        .then((response) => response?.json())
 
-      .catch((error) => {
-        console.error("Error:", error);
-      })
-      .then((data) => {
-        console.log("Success:", data);
-        setMovie(data);
-        setError(data.errorMessage);
-      });
+        .catch((err) => console.log("Error:", err))
+        .then((response) => {
+          console.log("Success:", response);
+          setMovie(response?.news);
+        });
+    }
   };
   const debounce = (handleCall, wait) => {
     let timeout;
@@ -41,7 +40,7 @@ function App() {
       timeout = setTimeout(speedSearch, wait);
     };
   };
-
+  useEffect(() => debounce((india) => handleCall(india), 1000), []);
   const handleReset = () => {
     setMovie("");
     setError();
@@ -49,30 +48,39 @@ function App() {
 
   return (
     <div>
-      <header>
-        <p>Click Button to get image</p>
-        <input
-          type="text"
-          onChange={debounce((e) => handleCall(e.target.value), 1000)}
-        ></input>
-        {/* <button
-          style={{ marginRight: "10px", marginBottom: "15px" }}
-          onClick={() => handleCall(search)}
-        >
-          Learn React
-        </button> */}
-        <button onClick={() => handleReset()}> Reset</button>
+      <header >
+      <div className="Text">Search your favourite financial news</div>
 
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "15px",
+            marginBottom: "10px",
+            background:"#f4f5f7",
+            marginTop:"5px"
+          }}
+        >
+          
+          <input
+            type="text"
+            className="width"
+            onChange={debounce((e) => handleCall(e.target.value), 1000)}
+          ></input>
+
+          <button onClick={() => handleReset()}> Reset</button>
+        </div>
         <Grid container>
           {Array.isArray(movie) &&
             movie.map((item) => (
-              <Grid item xs={12} md={4} lg={3}>
-                <img
-                  style={{ width: "300px", height: "300px" }}
-                  src={item.image}
-                />
-
-                <input type="text" value={item.title}></input>
+              <Grid item xs={12} md={6} lg={4}>
+                <div style={{ marginBottom: "3px" }}>{item?.title}</div>
+                <div style={{ marginBottom: "5px" }}>
+                  <a href={item?.longURL} target="_blank">
+                    {" "}
+                    click me to show details
+                  </a>
+                </div>
               </Grid>
             ))}
           {error?.length === "0" ? "" : <div>{error}</div>}
