@@ -28,6 +28,7 @@ function App() {
         });
     }
   };
+
   const debounce = (handleCall, wait) => {
     let timeout;
 
@@ -41,15 +42,15 @@ function App() {
     };
   };
   useEffect(() => debounce((india) => handleCall(india), 1000), []);
-  const handleReset = () => {
+  const handleReset = (e) => {
     setMovie("");
     setError();
   };
 
   return (
     <div>
-      <header >
-      <div className="Text">Search your favourite financial news</div>
+      <header>
+        <div className="Text">Search your favourite financial news</div>
 
         <div
           style={{
@@ -57,11 +58,10 @@ function App() {
             justifyContent: "center",
             gap: "15px",
             marginBottom: "10px",
-            background:"#f4f5f7",
-            marginTop:"5px"
+            background: "#f4f5f7",
+            marginTop: "5px",
           }}
         >
-          
           <input
             type="text"
             className="width"
@@ -71,6 +71,7 @@ function App() {
           <button onClick={() => handleReset()}> Reset</button>
         </div>
         <Grid container>
+          {console.log(movie.length)}
           {Array.isArray(movie) &&
             movie.map((item) => (
               <Grid item xs={12} md={6} lg={4}>
@@ -84,6 +85,15 @@ function App() {
               </Grid>
             ))}
           {error?.length === "0" ? "" : <div>{error}</div>}
+          <div
+            style={{
+              fontSize: "2rem",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            {movie.length == 0 ? "No result found" : ""}
+          </div>
         </Grid>
       </header>
     </div>
